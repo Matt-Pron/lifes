@@ -26,7 +26,7 @@ make clean
 
 ## Example tables
 
-To fill the tables with an simple example data use:
+To fill the tables with simple example data use:
 
 ```
 cp ./assets/data ./bin/
