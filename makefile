@@ -23,7 +23,7 @@ BIN_DIR = bin
 
 # Files
 SOURCES = $(SRC_DIR)/main.cpp $(SRC_DIR)/render.cpp $(SRC_DIR)/control.cpp $(SRC_DIR)/entities.cpp $(SRC_DIR)/data.cpp
-OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
+OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
 EXECUTABLE = $(BIN_DIR)/lifes
 
 # Header files for dependency tracking
@@ -38,9 +38,10 @@ $(EXECUTABLE): $(OBJECTS) | $(BIN_DIR)
 	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
 	@echo "Build complete: $@"
 
-# Compile source files to object files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(HEADERS) | $(OBJ_DIR)
+# Compile source files and generate dependencies
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@echo "Compiling $<..."
+	$(CXX) $(CXXFLAGS) -M $< > $(OBJ_DIR)/$*.d
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Create directories if they don't exist
@@ -62,8 +63,3 @@ clean:
 # Dependency tracking
 # Automatically include generated dependency files
 -include $(OBJECTS:.o=.d)
-
-# Generate dependency files during compilation
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -M $< > $(OBJ_DIR)/$*.d
-	$(CXX) $(CXXFLAGS) -c $< -o $@
