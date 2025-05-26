@@ -21,43 +21,38 @@ int select(int indices, int ch)
     bool table = gettable(indices);
     size_t indexPJ = iPJ(indices);
     size_t indexPNJ = iPNJ(indices);
-    
-        switch (ch) {
-            case 'h':
-                indices &= 0xFF;
-                move(0, 0);
-                printw("%d", indices);
-                return indices;
-            case 'l':
-                indices &= 0xFF;
-                indices |= (0b1 << 8);
-                move(0, 0);
-                printw("%d", indices);
-                return indices;
-            case 'j':
-                if (table && indexPNJ < entities.getPNJSize()) {
-                    indexPNJ++;
-                } else if (!table && indexPJ < entities.getPJSize()) {
-                    indexPJ++;
-                }
-                move(0, 0);
-                indices = (table << 8) | ((indexPJ & 0xF) << 4) | (indexPNJ & 0xF);
-                printw("%d", indices);
-                return (table << 8) | ((indexPJ & 0xF) << 4) | (indexPNJ & 0xF);
-            case 'k':
-                if (table && indexPNJ > 0) {
-                    indexPNJ--;
-                } else if (!table && indexPJ > 0) {
-                    indexPJ--;
-                }
-                indices = (table << 8) | ((indexPJ & 0xF) << 4) | (indexPNJ & 0xF);
-                printw("%d", indices);
-                return (table << 8) | ((indexPJ & 0xF) << 4) | (indexPNJ & 0xF);
-            default:
-                break;
-        }
 
-    return 0;
+    switch (ch) {
+        case 'h':
+            indices &= 0xFF;
+            table = 0;
+            break;
+        case 'l':
+            indices &= 0xFF;
+            indices |= (0b1 << 8);
+            table = 1;
+            break;
+        case 'j':
+            if (table && indexPNJ < entities.getPNJSize() - 1 && indexPNJ < 15) {
+                indexPNJ++;
+            } else if (!table && indexPJ < entities.getPJSize() - 1 && indexPJ < 15) {
+                indexPJ++;
+            }
+            break;
+        case 'k':
+            if (table && indexPNJ > 0) {
+                indexPNJ--;
+            } else if (!table && indexPJ > 0) {
+                indexPJ--;
+            }
+            break;
+        default:
+            return indices;
+    }
+
+    indices = (table << 8) | ((indexPJ & 0xF) << 4) | (indexPNJ & 0xF);
+    wm.highlight(indices);
+    return indices;
 }
 
 int readInput(const int* mode, const string* input)
@@ -276,7 +271,7 @@ int enableInput(WINDOW* win)
 
             case 12: // remove entity
                 newEntity.hp = stoi(input);
-                entities.remove(0x30);
+                entities.remove(newEntity.hp);
                 initTables(wm);
                 input.clear();
                 mode = 0;
@@ -318,18 +313,9 @@ int enableInput(WINDOW* win)
                 break;
 
             case 0b100:                             // ADD_HP
-                if (input == "h" || input == "j" ||
-                    input == "k" || input == "l")
-                    indices = select(indices, ch);
-                if (ch >= 48 && ch <= 57 && input.length() < 8)
-                {
-                    input.push_back(ch);
-                }
-                break;
-
             case 0b1000:                            // RM
-                if (input == "h" || input == "j" ||
-                    input == "k" || input == "l")
+                if (ch == 'h' || ch == 'j' ||
+                    ch == 'k' || ch == 'l')
                     indices = select(indices, ch);
                 if (ch >= 48 && ch <= 57 && input.length() < 8)
                 {
