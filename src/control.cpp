@@ -18,17 +18,21 @@ using namespace std;
 
 int select(int indices, int ch)
 {
-    bool table = (indices & 0x100) >> 8;
-    uint8_t indexPJ = (indices & 0xF0) >> 4;
-    uint8_t indexPNJ = (indices & 0xF);
+    bool table = gettable(indices);
+    int8_t indexPJ = iPJ(indices);
+    int8_t indexPNJ = iPNJ(indices);
     
         switch (ch) {
             case 'h':
                 indices &= 0xFF;
+                move(0, 0);
+                printw("%d", indices);
                 return indices;
             case 'l':
                 indices &= 0xFF;
                 indices |= (0b1 << 8);
+                move(0, 0);
+                printw("%d", indices);
                 return indices;
             case 'j':
                 if (table && indexPNJ < entities.getPNJSize()) {
@@ -36,6 +40,9 @@ int select(int indices, int ch)
                 } else if (!table && indexPJ < entities.getPJSize()) {
                     indexPJ++;
                 }
+                move(0, 0);
+                indices = (table << 8) | ((indexPJ & 0xF) << 4) | (indexPNJ & 0xF);
+                printw("%d", indices);
                 return (table << 8) | ((indexPJ & 0xF) << 4) | (indexPNJ & 0xF);
             case 'k':
                 if (table && indexPNJ > 0) {
@@ -43,6 +50,8 @@ int select(int indices, int ch)
                 } else if (!table && indexPJ > 0) {
                     indexPJ--;
                 }
+                indices = (table << 8) | ((indexPJ & 0xF) << 4) | (indexPNJ & 0xF);
+                printw("%d", indices);
                 return (table << 8) | ((indexPJ & 0xF) << 4) | (indexPNJ & 0xF);
             default:
                 break;
@@ -72,8 +81,8 @@ int readInput(const int* mode, const string* input)
 
             try {
                 size_t pos;
-                // int hp = stoi(*input, &pos, 10);
-                if (pos == input->length()){
+                int hp = stoi(*input, &pos, 10);
+                if (pos == input->length() && hp >= 0){
                     return 11;
                 }
             }
@@ -97,7 +106,7 @@ int readInput(const int* mode, const string* input)
             if (input == nullptr || input->empty()) return 0;
             try {
                 size_t pos;
-                int hp = stoi(*input, &pos, 10);
+                int hp = stoi(*input, &pos);
                 if (pos == input->length() && hp >= 0){
                     return 9;
                 }
@@ -105,14 +114,14 @@ int readInput(const int* mode, const string* input)
             catch (...) {
                 return 0;
             }
-            return 9;
+            return 0;
 
         case 0b1000:
             if (input == nullptr || input->empty()) return 0;
             try {
                 size_t pos;
-                int hp = stoi(*input, &pos, 10);
-                if (pos == input->length() && hp >= 0){
+                int i = stoi(*input, &pos);
+                if (pos == input->length() && i >= 0){
                     return 12;
                 }
             }
@@ -259,13 +268,16 @@ int enableInput(WINDOW* win)
 
             case 11: // modify HP
                 newEntity.hp = stoi(input);
-                entities.modifyHP(0, 0, newEntity.hp);
+                entities.modifyHP(indices, newEntity.hp);
                 initTables(wm);
                 input.clear();
                 mode = 0;
                 break;
 
             case 12: // remove entity
+                newEntity.hp = stoi(input);
+                entities.remove(0x30);
+                initTables(wm);
                 input.clear();
                 mode = 0;
                 break;
@@ -306,10 +318,9 @@ int enableInput(WINDOW* win)
                 break;
 
             case 0b100:                             // ADD_HP
-                if ((mode & 0xC) != 0 && (input == "h" ||
-                            input == "j" ||
-                            input == "k" ||
-                            input == "l")) select(indices, ch);
+                if (input == "h" || input == "j" ||
+                    input == "k" || input == "l")
+                    indices = select(indices, ch);
                 if (ch >= 48 && ch <= 57 && input.length() < 8)
                 {
                     input.push_back(ch);
@@ -317,10 +328,9 @@ int enableInput(WINDOW* win)
                 break;
 
             case 0b1000:                            // RM
-                if ((mode & 0xC) != 0 && (input == "h" ||
-                            input == "j" ||
-                            input == "k" ||
-                            input == "l")) select(indices, ch);
+                if (input == "h" || input == "j" ||
+                    input == "k" || input == "l")
+                    indices = select(indices, ch);
                 if (ch >= 48 && ch <= 57 && input.length() < 8)
                 {
                     input.push_back(ch);

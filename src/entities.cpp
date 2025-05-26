@@ -1,4 +1,5 @@
 #include "main.h"
+#include <cstdint>
 #include <ncurses.h>
 #include <string>
 #include <vector>
@@ -18,26 +19,17 @@ void Entities::addPNJ(const string& name, int hp)
     pnjsArr.push_back({name, hp});
 }
 
-bool Entities::removePJ(const string& name)
+void Entities::remove(const int& indices)
 {
-    auto it = find_if(pjsArr.begin(), pjsArr.end(), [&name](const entity& e) {
-            return e.name == name; });
-    if (it != pjsArr.end()) {
-        pjsArr.erase(it);
-        return true;
-    }
-    return false;
-}
+    bool table = gettable(indices);
 
-bool Entities::removePNJ(const string& name)
-{
-    auto it = find_if(pnjsArr.begin(), pnjsArr.end(), [&name](const entity& e) {
-            return e.name == name; });
-    if (it != pnjsArr.end()) {
-        pnjsArr.erase(it);
-        return true;
+    if (table) {
+        if (iPNJ(indices) < pnjsArr.size())
+            pnjsArr.erase(pnjsArr.begin() + iPNJ(indices));
+    } else {
+        if (iPJ(indices) < pjsArr.size())
+            pjsArr.erase(pjsArr.begin() + iPJ(indices));
     }
-    return false;
 }
 
 string Entities::getPJ(size_t index, bool returnName) const
@@ -56,16 +48,19 @@ string Entities::getPNJ(size_t index, bool returnName) const
     return returnName ? "" : "0";
 }
 
-void Entities::modifyHP(bool type, size_t index, int hp)
+void Entities::modifyHP(int indices, int hp)
 {
-    if (type) {
-        if (index < pnjsArr.size())
-            pnjsArr[index].hp += hp;
-    } else {
-        if (index < pjsArr.size())
-            pjsArr[index].hp += hp;
+    bool pnj = gettable(indices);
+    size_t indexPJ = iPJ(indices);
+    size_t indexPNJ = iPNJ(indices);
+    
+    if (pnj) {
+        if (indexPNJ < pnjsArr.size()) {
+            pnjsArr[indexPNJ].hp += hp;
+        } else if (indexPJ < pjsArr.size()) {
+            pjsArr[indexPJ].hp += hp;
+        }
     }
-    initTables(wm);
 }
 
 uint8_t Entities::getPJSize() const

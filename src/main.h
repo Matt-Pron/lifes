@@ -21,11 +21,10 @@ class Entities {
         Entities() = default;
         void addPJ(const string& name, int hp);
         void addPNJ(const string& name, int hp);
-        bool removePJ(const string& name);
-        bool removePNJ(const string& name);
+        void remove(const int& indices);
         string getPJ(size_t index, bool returnName) const;
         string getPNJ(size_t index, bool returnName) const;
-        void modifyHP(bool type, size_t index, int hp);
+        void modifyHP(int indices, int hp);
         uint8_t getPJSize() const;
         uint8_t getPNJSize() const;
 };
@@ -35,6 +34,9 @@ extern Entities entities;
 string getAppDir();
 void save(const Entities& entities);
 void load(Entities& entities);
+bool gettable(const int& indices);
+size_t iPJ(const int& indices);
+size_t iPNJ(const int& indices);
 
 // Render
 class WindowManager {

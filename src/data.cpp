@@ -8,6 +8,21 @@
 
 using namespace std;
 
+bool gettable(const int& indices)
+{
+    return (indices & 0x100) >> 8;
+}
+
+size_t iPJ(const int& indices)
+{
+    return (indices & 0xF0) >> 4;
+}
+
+size_t iPNJ(const int& indices)
+{
+    return (indices & 0xF);
+}
+
 string getAppDir()
 {
     char buf[PATH_MAX];
