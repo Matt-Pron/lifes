@@ -29,5 +29,5 @@ make clean
 To fill the tables with simple example data use:
 
 ```
-cp ./assets/data ./bin/
+cp -r ./assets/data ./bin/
 ```
