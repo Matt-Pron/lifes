@@ -19,8 +19,8 @@ using namespace std;
 int select(int indices, int ch)
 {
     bool table = gettable(indices);
-    int8_t indexPJ = iPJ(indices);
-    int8_t indexPNJ = iPNJ(indices);
+    size_t indexPJ = iPJ(indices);
+    size_t indexPNJ = iPNJ(indices);
     
         switch (ch) {
             case 'h':
