@@ -25,8 +25,8 @@ class Entities {
         string getPJ(size_t index, bool returnName) const;
         string getPNJ(size_t index, bool returnName) const;
         void modifyHP(int indices, int hp);
-        uint8_t getPJSize() const;
-        uint8_t getPNJSize() const;
+        size_t getPJSize() const;
+        size_t getPNJSize() const;
 };
 extern Entities entities;
 

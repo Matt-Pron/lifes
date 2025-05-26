@@ -63,12 +63,12 @@ void Entities::modifyHP(int indices, int hp)
     }
 }
 
-uint8_t Entities::getPJSize() const
+size_t Entities::getPJSize() const
 {
     return pjsArr.size();
 }
 
-uint8_t Entities::getPNJSize() const
+size_t Entities::getPNJSize() const
 {
     return pnjsArr.size();
 }
