@@ -1,5 +1,7 @@
 # Lifes
 
+![screenshot](https://github.com/matt-pron/lifes/blob/main/assets/screenshot.png?raw=true)
+
 **Lifes** is a TUI TTRPG Health Points tracker for Linux.
 
 It's made in c++, using ncurses.
