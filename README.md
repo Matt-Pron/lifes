@@ -1,6 +1,6 @@
 # Lifes
 
-![screenshot](https://github.com/matt-pron/lifes/blob/main/assets/screenshot.png?raw=true)
+<img src="https://github.com/matt-pron/lifes/blob/main/assets/screenshot.png?raw=true" width="100%">
 
 **Lifes** is a minimalist TUI TTRPG Health Points tracker for Linux.
 
@@ -9,6 +9,8 @@ It's made in c++, using ncurses.
 > Work In Progress
 > Still missing Help window. Usage information below.  
 > TODO: Commands to save and load PNJ tables by name, so you can setup multiple encounters before your session.
+
+<img src="https://github.com/Matt-Pron/lifes/blob/main/assets/showcase.gif?raw=true" width="100%">
 
 ## Description
 
