@@ -12,7 +12,9 @@ It's made in c++, using ncurses.
 ## Description
 
 Add or remove characters to setup the tables for your encounter.
+
 To modify a character's HP, select it, type the (-) damage or healing amount and confirm with <kbd>return</kbd>.
+
 Both tables are saved in disk when you add or remove a character, or modify it's HP.
 
 ## Building
