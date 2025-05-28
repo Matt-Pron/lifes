@@ -12,10 +12,8 @@ It's made in c++, using ncurses.
 
 ## Description
 
-Add or remove characters to setup the tables for your encounter.
-
-To modify a character's HP, select it, type the damage(-) or healing amount and confirm with <kbd>Return</kbd>.
-
+Add or remove characters to setup the tables for your encounter.  
+To modify a character's HP, select it, type the damage(-) or healing amount and confirm with <kbd>Return</kbd>.  
 Characters between 1 and 9 HP will be displayed in yellow. Characters with 0 or less HP will be displayed in red.
 
 Both tables are saved in disk when altered.
