@@ -29,6 +29,7 @@ Render::Render() {
     start_color();
     use_default_colors();
     assume_default_colors(-1, -1);
+    init_pair(0, -1, -1);
     init_pair(LOW_HP, COLOR_YELLOW, -1);
     init_pair(DEAD, COLOR_RED, -1);
 
