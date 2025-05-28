@@ -68,8 +68,7 @@ void modeAddTable() {
 void modeAddName(const bool table) {
     std::string input = "";
     std::string str;
-    table ? str = "PJ" : "PNJ";
-    str = str + " name > ";
+    table ? str = "PNJ name > " : str = "PJ name > ";
     render.print(str, 1);
 
     bool on = 1;
