@@ -22,12 +22,12 @@ OBJ_DIR = obj
 BIN_DIR = bin
 
 # Files
-SOURCES = $(SRC_DIR)/main.cpp $(SRC_DIR)/render.cpp $(SRC_DIR)/control.cpp $(SRC_DIR)/entities.cpp $(SRC_DIR)/data.cpp
+SOURCES = $(SRC_DIR)/main.cpp $(SRC_DIR)/render.cpp $(SRC_DIR)/indices.cpp $(SRC_DIR)/entities.cpp $(SRC_DIR)/data.cpp $(SRC_DIR)/control.cpp
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
 EXECUTABLE = $(BIN_DIR)/lifes
 
 # Header files for dependency tracking
-HEADERS = $(SRC_DIR)/main.h
+HEADERS = $(SRC_DIR)/main.h $(SRC_DIR)/render.h $(SRC_DIR)/indices.h $(SRC_DIR)/entities.h $(SRC_DIR)/data.h $(SRC_DIR)/control.h
 
 # Default target
 all: $(EXECUTABLE)

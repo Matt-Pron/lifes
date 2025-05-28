@@ -1,24 +1,59 @@
-#include <cstddef>
+#include "render.h"
+#include "entities.h"
+#include <cstdint>
+#include <cstdlib>
 #include <ncurses.h>
-#include "main.h"
+#include <string>
 
-WindowManager wm;
+#define LOW_HP  1
+#define DEAD    2
 
-WindowManager::WindowManager()
-{
-    // Iniciar NCurses
-    set_escdelay(10);
+Render render;
+
+Render::Render() {
     initscr();
+
     noecho();
+    raw();
     keypad(stdscr, true);
+    set_escdelay(10);
+    nodelay(stdscr, 0);
+    curs_set(0);
+
+    if (has_colors() == FALSE) {
+        endwin();
+        printf("The terminal does not support colors.\n");
+        exit(1);
+    }
+
+    start_color();
+    use_default_colors();
+    assume_default_colors(-1, -1);
+    init_pair(LOW_HP, COLOR_YELLOW, -1);
+    init_pair(DEAD, COLOR_RED, -1);
+
+    /*WINDOW * mainWB;
+    WINDOW * mainW;
+    WINDOW * inputWB;
+    WINDOW * inputW;
+    WINDOW * pjsWB;
+    WINDOW * pjsW;
+    WINDOW * pnjsWB;
+    WINDOW * pnjsW;
+    WINDOW * helpW;*/
 }
 
-void WindowManager::drawMainWin()
-{
-    // Draw main window border
-    int scrY, scrX;
-    getmaxyx(stdscr, scrY, scrX); // Get screen size
-    WINDOW * mainWB = newwin(scrY, scrX, 0, 0);
+Render::~Render() {
+    endwin();
+}
+
+void Render::openHelp() {
+}
+
+void Render::openMainWin() {
+    // Main window Border
+    getmaxyx(stdscr, scrY, scrX);
+    mainWB = newwin(scrY, scrX, 0, 0);
     box(mainWB, 0, 0);
     refresh();
     wattron(mainWB, A_REVERSE);
@@ -29,145 +64,123 @@ void WindowManager::drawMainWin()
     wattroff(mainWB, A_REVERSE);
     wrefresh(mainWB);
 
-    // Draw main window content
-    WINDOW * mainW = derwin(mainWB, scrY-2, scrX-2, 1, 1);
+    // Main window
+    mainW = derwin(mainWB, scrY-2, scrX-2, 1, 1);
     refresh();
     wrefresh(mainW);
 
-    // Window Input Border
-    WINDOW * inputWB = newwin(3, scrX, scrY-3, 0);
+    // Input window border
+    inputWB = newwin(3, scrX, scrY-3, 0);
     wborder(inputWB, 0, 0, 0, 0, (int)ACS_LTEE, (int)ACS_RTEE, 0, 0);
     refresh();
     wrefresh(inputWB);
 
-    // Window Pcs Border
-    WINDOW * pjsWB = newwin(scrY-4, 20, 1, 1);
+    // Pjs window border
+    pjsWB = derwin(mainW, scrY-4, 20, 0, 0);
     box(pjsWB, 0, 0);
     mvwprintw(pjsWB, 0, 1, "PJs");
-    mvwprintw(pjsWB, 0, 20-5, "HP");
+    mvwprintw(pjsWB, 0, 20-4, "HP");
     refresh();
     wrefresh(pjsWB);
 
-    // Window Npcs Border
-    WINDOW * pnjsWB = newwin(scrY-4, 20, 1, 21);
+    // Pnjs window border
+    pnjsWB = derwin(mainW, scrY-4, 20, 0, 20);
     box(pnjsWB, 0, 0);
     mvwprintw(pnjsWB, 0, 1, "PNJs");
-    mvwprintw(pnjsWB, 0, 20-5, "HP");
+    mvwprintw(pnjsWB, 0, 20-4, "HP");
     refresh();
     wrefresh(pnjsWB);
-    
-    // Ventanas dinamicas
-    winArray[0] = derwin(pjsWB,scrY-5,21-2,0,0); // PJ
+
+    // Dynamic windows
+    pjsW = derwin(pjsWB, scrY-6, 21-3, 1, 1);
     refresh();
-    wrefresh(winArray[0]);
-    winArray[1] = derwin(pnjsWB,scrY-5,21-2,0,0); // PNJ
+    wrefresh(pjsW);
+    pnjsW = derwin(pnjsWB, scrY-6, 21-3, 1, 1);
     refresh();
-    wrefresh(winArray[1]);
-    winArray[2] = derwin(inputWB, 1, scrY-5, 1, 1); // Input
+    wrefresh(pnjsW);
+    inputW = derwin(inputWB, 1, getmaxx(inputWB)-2, 1, 1);
     refresh();
-    wrefresh(winArray[2]);
+    wrefresh(inputW);
 
-    initTables(wm);
+    pjs();
+    pnjs();
 
 }
 
-void WindowManager::drawHelpWin()
-{
+void Render::both() {
+    pjs();
+    pnjs();
 }
 
-void highlight(int indices)
-{
-    WINDOW** win = wm.getWin();
-
-    bool table = gettable(indices);
-    size_t indexPJ = iPJ(indices);
-    size_t indexPNJ = iPNJ(indices);
-
-    wclear(win[0]);
-    if (!table) {
-        wmove(win[0], 0, 0);
-        for(size_t i = 0; i < entities.getPJSize(); i++)
-        {
-            if (i == indexPJ)
-                wattron(win[0], A_REVERSE);
-            int maxx = getmaxx(win[0]);
-            string hp = entities.getPJ(i, 0).c_str();
-            int hpx = maxx - hp.length();
-            if (i < 10){
-                mvwprintw(win[0], i+1, 2, "%zu", i);
-            } else mvwprintw(win[0], i+1, 1, "%zu", i);
-            mvwprintw(win[0], i+1, 4, "%s", entities.getPJ(i, 1).c_str());
-            mvwprintw(win[0], i+1, hpx, "%s", hp.c_str());
-            wattroff(win[0], A_REVERSE);
-        }
-        wrefresh(win[0]);
+void Render::pjs() {
+    for (uint8_t y = 0; y < getmaxy(pjsW); y++) {
+        wmove(pjsW, y, 0);
+        wclrtoeol(pjsW);
     }
 
-    wclear(win[1]);
-    if (table) {
-        for(size_t i = 0; i < entities.getPNJSize(); i++)
-        {
-            if (i == indexPNJ)
-                wattron(win[1], A_REVERSE);
-            int maxx = getmaxx(win[1]);
-            string hp = entities.getPNJ(i, 0).c_str();
-            int hpx = maxx - hp.length();
-            if (i < 10){
-                mvwprintw(win[1], i+1, 2, "%zu", i);
-            } else mvwprintw(win[1], i+1, 1, "%zu", i);
-            mvwprintw(win[1], i+1, 4, "%s", entities.getPNJ(i, 1).c_str());
-            mvwprintw(win[1], i+1, hpx, "%s", hp.c_str());
-            wattroff(win[1], A_REVERSE);
-        }
-        wrefresh(win[1]);
+    for(uint8_t i = 0; i < entities.getSize(0); i++) {
+        if (!indices.getTable() && i == indices.getIndexPJ())
+            wattron(pjsW, A_REVERSE);
+        if (entities.getEntity(0, i).hp < 10)
+            wattron(pjsW, COLOR_PAIR(LOW_HP));
+        if (entities.getEntity(0, i).hp <= 0)
+            wattron(pjsW, COLOR_PAIR(DEAD));
+        uint8_t maxx = getmaxx(pjsW);
+        std::string hp = std::to_string(entities.getEntity(0, i).hp);
+        uint8_t hpx = maxx - hp.length();
+        /*if (i < 10) {
+            mvwprintw(pjsW, i, 1, "%d.", i);
+        } else mvwprintw(pjsW, i, 0, "%d.", i);*/
+        mvwprintw(pjsW, i, 0, "%s", entities.getEntity(0, i).name.c_str());
+        mvwprintw(pjsW, i, hpx, "%s", hp.c_str());
+        wrefresh(pjsW);
+        if (!indices.getTable() && i == indices.getIndexPJ())
+            wattroff(pjsW, A_REVERSE);
+        if (entities.getEntity(0, i).hp < 10)
+            wattroff(pjsW, COLOR_PAIR(LOW_HP));
+        if (entities.getEntity(0, i).hp <= 0)
+            wattroff(pjsW, COLOR_PAIR(DEAD));
     }
+    wrefresh(pjsW);
 }
 
-WINDOW** WindowManager::getWin() const
-{
-    return const_cast<WINDOW**>(winArray);
-}
-
-int initTables(WindowManager& windowmanager)
-{
-
-    WINDOW** win = windowmanager.getWin();
-    WINDOW* pjs = win[0];
-    WINDOW* pnjs = win[1];
-
-    wmove(pjs, 0, 0);
-    for(size_t i = 0; i < entities.getPJSize(); i++)
-    {
-        int maxx = getmaxx(pjs);
-        string hp = entities.getPJ(i, 0).c_str();
-        int hpx = maxx - hp.length();
-        if (i < 10){
-        mvwprintw(pjs, i+1, 2, "%zu", i);
-        } else mvwprintw(pjs, i+1, 1, "%zu", i);
-        mvwprintw(pjs, i+1, 4, "%s", entities.getPJ(i, 1).c_str());
-        mvwprintw(pjs, i+1, hpx, "%s", hp.c_str());
-        wrefresh(pjs);
+void Render::pnjs() {
+    for (uint8_t y = 0; y < getmaxy(pnjsW); y++) {
+        wmove(pnjsW, y, 0);
+        wclrtoeol(pnjsW);
     }
 
-    wmove(pnjs, 0, 0);
-    for(size_t w = 0; w < entities.getPNJSize(); w++)
-    {
-        int maxx = getmaxx(pnjs);
-        string hp = entities.getPNJ(w, 0).c_str();
-        int hpx = maxx - hp.length();
-        if (w < 10){
-        mvwprintw(pnjs, w+1, 2, "%zu", w);
-        } else mvwprintw(pnjs, w+1, 1, "%zu", w);
-        mvwprintw(pnjs, w+1, 4, "%s", entities.getPNJ(w, 1).c_str());
-        mvwprintw(pnjs, w+1, hpx, "%s", hp.c_str());
-        wrefresh(pnjs);
+    for(uint8_t i = 0; i < entities.getSize(1); i++) {
+        if (indices.getTable() && i == indices.getIndexPNJ())
+            wattron(pnjsW, A_REVERSE);
+        if (entities.getEntity(1, i).hp < 10)
+            wattron(pnjsW, COLOR_PAIR(LOW_HP));
+        if (entities.getEntity(1, i).hp <= 0)
+            wattron(pnjsW, COLOR_PAIR(DEAD));
+        uint8_t maxx = getmaxx(pnjsW);
+        std::string hp = std::to_string(entities.getEntity(1, i).hp);
+        uint8_t hpx = maxx - hp.length();
+        /*if (i < 10) {
+            mvwprintw(pnjsW, i, 1, "%d.", i);
+        } else mvwprintw(pnjsW, i, 0, "%d.", i);*/
+        mvwprintw(pnjsW, i, 0, "%s", entities.getEntity(1, i).name.c_str());
+        mvwprintw(pnjsW, i, hpx, "%s", hp.c_str());
+        wrefresh(pnjsW);
+        if (indices.getTable() && i == indices.getIndexPNJ())
+            wattroff(pnjsW, A_REVERSE);
+        if (entities.getEntity(1, i).hp < 10)
+            wattroff(pnjsW, COLOR_PAIR(LOW_HP));
+        if (entities.getEntity(1, i).hp <= 0)
+            wattroff(pnjsW, COLOR_PAIR(DEAD));
     }
-
-    return 0;
+    wrefresh(pnjsW);
 }
 
-int help()
-{
-    return 0;
+void Render::print(const std::string& str, bool cursor) {
+    cursor ? curs_set(2) : curs_set(0);
+    wmove(inputW, 0, 0);
+    wclrtoeol(inputW);
+    wprintw(inputW, "%s", str.c_str());
+    wrefresh(inputW);
 }
 
