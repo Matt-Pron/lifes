@@ -13,9 +13,11 @@ It's made in c++, using ncurses.
 
 Add or remove characters to setup the tables for your encounter.
 
-To modify a character's HP, select it, type the (-) damage or healing amount and confirm with <kbd>return</kbd>.
+To modify a character's HP, select it, type the damage(-) or healing amount and confirm with <kbd>Return</kbd>.
 
-Both tables are saved in disk when you add or remove a character, or modify it's HP.
+Characters between 1 and 9 HP will be displayed in yellow. Characters with 0 or less HP will be displayed in red.
+
+Both tables are saved in disk when altered.
 
 ## Building
 
@@ -52,11 +54,13 @@ make clean
 
 |Keybind|Command|
 |:---:|:---|
-|<kbd>Return</kbd>|Confirms input.|
-|<kbd>q</kbd>|Quits Lifes.|
 |<kbd>a</kbd>|Adds a new character.|
 |<kbd>r</kbd>|Removes a character. Confirm with <kbd>y</kbd> or <kbd>n</kbd>|
+|<kbd>Return</kbd>|Confirms input.|
+|<kbd>Backspace</kbd>|Erases input.|
+|<kbd>Escape</kbd>|Cancels current command.|
 |<kbd>F1</kbd>|~Opens help menu.~|
+|<kbd>q</kbd>|Quits Lifes.|
 
 ## Example tables
 
