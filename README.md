@@ -8,6 +8,7 @@ It's made in c++, using ncurses.
 
 > Work In Progress
 > Still missing Help window. Usage information below.
+> TODO: Commands to save and load PNJ tables by name, so you can setup multiple encounters before your session.
 
 ## Description
 
