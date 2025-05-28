@@ -4,10 +4,16 @@
 
 **Lifes** is a minimalist TUI TTRPG Health Points tracker for Linux.
 
+It's made in c++, using ncurses.
+
 > Work In Progress
 > Still missing Help window. Usage information below.
 
-It's made in c++, using ncurses.
+## Description
+
+Add or remove characters to setup the tables for your encounter.
+To modify a character's HP, select it, type the (-) damage or healing amount and confirm with <kbd>return</kbd>.
+Both tables are saved in disk when you add or remove a character, or modify it's HP.
 
 ## Building
 
@@ -44,10 +50,10 @@ make clean
 
 |Keybind|Command|
 |:---:|:---|
-|<kbd>Return</kbd>|Adds a new character.|
-|<kbd>q</kbd>|Adds a new character.|
+|<kbd>Return</kbd>|Confirms input.|
+|<kbd>q</kbd>|Quits Lifes.|
 |<kbd>a</kbd>|Adds a new character.|
-|<kbd>r</kbd>|Adds a new character.|
+|<kbd>r</kbd>|Removes a character. Confirm with <kbd>y</kbd> or <kbd>n</kbd>|
 |<kbd>F1</kbd>|~Opens help menu.~|
 
 ## Example tables
