@@ -34,6 +34,7 @@ make clean
 ## Movement
 
 |Keybind|Command|
+|---|---|
 |<kbd>h</kbd>|Moves to PJ table.|
 |<kbd>j</kbd>|Moves DOWN in the current table.|
 |<kbd>k</kbd>|Moves UP in the current table.|
@@ -42,6 +43,7 @@ make clean
 ## Commands
 
 |Keybind|Command|
+|---|---|
 |<kbd>Return</kbd>|Adds a new character.|
 |<kbd>q</kbd>|Adds a new character.|
 |<kbd>a</kbd>|Adds a new character.|
