@@ -10,6 +10,8 @@ It's made in c++, using ncurses.
 > Still missing Help window. Usage information below.  
 > TODO: When saving an encounter, check if it exists and promt for confirmation.  
 > TODO: When loading a encounter, autocomplete with TAB.  
+> TODO: If the terminal is too small, quit lifes and ask to use a bigger terminal.  
+> TODO: Re draw the windows when the terminal screen changes size.  
 
 <img src="https://github.com/Matt-Pron/lifes/blob/main/assets/showcase.gif?raw=true">
 
