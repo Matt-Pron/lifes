@@ -6,15 +6,17 @@
 
 It's made in c++, using ncurses.
 
-> Work In Progress
+> Work In Progress  
 > Still missing Help window. Usage information below.  
-> TODO: Commands to save and load PNJ tables by name, so you can setup multiple encounters before your session.
+> TODO: When saving an encounter, check if it exists and promt for confirmation.  
+> TODO: When loading a encounter, autocomplete with TAB.  
 
 <img src="https://github.com/Matt-Pron/lifes/blob/main/assets/showcase.gif?raw=true">
 
 ## Description
 
 Add or remove characters to setup the tables for your encounter.  
+Save your pnj encounters by name.
 To modify a character's HP, select it, type the damage(-) or healing amount and confirm with <kbd>Return</kbd>.  
 Characters between 1 and 9 HP will be displayed in yellow. Characters with 0 or less HP will be displayed in red.
 
@@ -60,6 +62,8 @@ make clean
 |<kbd>Return</kbd>|Confirms input.|
 |<kbd>Backspace</kbd>|Erases input.|
 |<kbd>Escape</kbd>|Cancels current command.|
+|<kbd>S</kbd>|Save encounter (pnjs).|
+|<kbd>L</kbd>|Load encounter (pnjs).|
 |<kbd>F1</kbd>|~Opens help menu.~|
 |<kbd>q</kbd>|Quits Lifes.|
 
