@@ -8,7 +8,9 @@ Entities entities;
 Indices indices;
 
 Entities::Entities() { // : pjs_{}, pnjs_{} {
+    encounter_ = "pnjs";
     load();
+    loadEncounter(encounter_);
 }
 
 void Entities::sortArrays() {
@@ -66,5 +68,19 @@ uint8_t Entities::getSize(bool table) const {
         if (!entity.name.empty()) count++;
     }
     return count;
+}
+
+void Entities::changeEncounter(std::string encounter) {
+    encounter_ = encounter;
+
+    for (uint8_t i = 0; i < 16; i++) {
+        pnjs_[i].name = "";
+    }
+
+    loadEncounter(encounter_);
+}
+
+const std::string& Entities::getEncounter() const {
+    return encounter_;
 }
 

@@ -15,6 +15,7 @@ class Entities {
         std::array<Entity, 16> pjs_;
         std::array<Entity, 16> pnjs_;
         void sortArrays();
+        std::string encounter_;
 
     public:
         Entities();
@@ -23,6 +24,8 @@ class Entities {
         void modifyHP(int16_t i);
         const Entity& getEntity(bool table, uint8_t index) const;
         uint8_t getSize(bool table) const;
+        void changeEncounter(std::string encounter);
+        const std::string& getEncounter() const;
 };
 
 // Global instances

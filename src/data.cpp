@@ -31,23 +31,14 @@ std::string getPath() {
 
 void save() {
     std::string pjsPath = getPath() + "pjs.ini";
-    std::string pnjsPath = getPath() + "pnjs.ini";
     std::ofstream outFilePj(pjsPath);
-    std::ofstream outFilePnj(pnjsPath);
 
     outFilePj << "[pj]\n";
     for (uint8_t i = 0; i < entities.getSize(0); ++i) {
         outFilePj << entities.getEntity(0, i).name << "=" << std::to_string(entities.getEntity(0, i).hp) << "\n";
     }
 
-
-    outFilePnj << "[pnj]\n";
-    for (uint8_t i = 0; i < entities.getSize(1); ++i) {
-        outFilePnj << entities.getEntity(1, i).name << "=" << std::to_string(entities.getEntity(1, i).hp) << "\n";
-    }
-
     outFilePj.close();
-    outFilePnj.close();
 }
 
 void saveVictims() {
@@ -80,9 +71,7 @@ void saveVictims() {
 
 void load() {
     std::string pjsPath = getPath() + "pjs.ini";
-    std::string pnjsPath = getPath() + "pnjs.ini";
     std::ifstream inFilePj(pjsPath);
-    std::ifstream inFilePnj(pnjsPath);
 
     std::string line;
     while (std::getline(inFilePj, line)) {
@@ -104,6 +93,27 @@ void load() {
         }
     }
 
+    inFilePj.close();
+}
+
+void saveEncounter(std::string filename) {
+    std::string pnjsPath = getPath() + filename + ".ini";
+    std::ofstream outFilePnj(pnjsPath);
+
+    outFilePnj << "[pnj]\n";
+    for (uint8_t i = 0; i < entities.getSize(1); ++i) {
+        outFilePnj << entities.getEntity(1, i).name << "=" << std::to_string(entities.getEntity(1, i).hp) << "\n";
+    }
+
+    outFilePnj.close();
+}
+
+void loadEncounter(std::string filename) {
+    std::string pnjsPath = getPath() + filename + ".ini";
+    std::ifstream inFilePnj(pnjsPath);
+
+    std::string line;
+
     while (std::getline(inFilePnj, line)) {
         if (line.empty()) continue;
         if (line == "[pnj]") continue;
@@ -123,7 +133,5 @@ void load() {
         }
     }
 
-    inFilePj.close();
     inFilePnj.close();
 }
-

@@ -25,6 +25,9 @@ void modeDefault() {
         if (ch == 'a') modeAddTable();  // add entity
         if (ch == 'r') modeRemove();  // add entity
 
+        if (ch == 'S') modeEncounter(1);  // save encounter
+        if (ch == 'L') modeEncounter(0);  // load encounter
+
         if (ch == KEY_BACKSPACE && input.length() > 0)
             input.pop_back();               // Erase
 
@@ -35,6 +38,7 @@ void modeDefault() {
             input = "";
             entities.modifyHP(hp_);
             save();
+            saveEncounter(entities.getEncounter());
             indices.getTable() ? render.pnjs() : render.pjs();
             render.print(input, 1);
         }
@@ -125,6 +129,7 @@ void modeAddHP(const bool table, const std::string& name) {
             newEntity->hp = hp_;            // Add the entity
             entities.add(newEntity, table);
             save();
+            saveEncounter(entities.getEncounter());
             delete newEntity;
             table ? render.pnjs() : render.pjs();
             break;
@@ -149,6 +154,7 @@ void modeRemove() {
         if (ch == 'y') {
             entities.remove();
             save();
+            saveEncounter(entities.getEncounter());
             if (indices.getIndexPNJ() >= entities.getSize(1)) indices.setIndexPNJ(entities.getSize(1) - 1);
             if (indices.getIndexPJ() >= entities.getSize(0)) indices.setIndexPJ(entities.getSize(0) - 1);
             indices.getTable() ? render.pnjs() : render.pjs();
@@ -158,6 +164,46 @@ void modeRemove() {
         if (ch == 27 || ch == 'n') break;                // return to default
         if (ch == 'q') quit();
     }
+}
+
+void modeEncounter(bool save) {
+    std::string input = "";
+    std::string str;
+    save ? str = "Save > " : str = "Load > ";
+    render.print(str, 1);
+
+    bool on = 1;
+
+    while (on) {
+        int ch = getch();
+
+        if (input.length() < 8 &&
+                ((ch == 32) ||
+                 (ch >= 48 && ch <= 57) ||
+                 (ch >= 65 && ch <= 90) ||
+                 (ch >= 97 && ch <= 122)))
+            input.push_back(ch);
+
+        if (ch == KEY_BACKSPACE && input.length() > 0)
+            input.pop_back();
+
+        render.print(str + input, 1);
+
+        if (ch == '\n' && input.length() > 0 && save) {
+            saveEncounter(input);
+            entities.changeEncounter(input);
+            break;
+        }
+
+        if (ch == '\n' && input.length() > 0 && !save) {
+            entities.changeEncounter(input);
+            render.pnjs();
+            break;
+        }
+
+        if (ch == 27) break;       // return to default
+    }
+
 }
 
 void quit() {

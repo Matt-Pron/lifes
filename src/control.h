@@ -10,6 +10,8 @@ void modeAddHP(const bool table, const std::string& name);
 
 void modeRemove();
 
+void modeEncounter(bool save);
+
 void quit();
 
 bool moveUp();
