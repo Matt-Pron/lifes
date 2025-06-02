@@ -33,15 +33,7 @@ Render::Render() {
     init_pair(LOW_HP, COLOR_YELLOW, -1);
     init_pair(DEAD, COLOR_RED, -1);
 
-    /*WINDOW * mainWB;
-    WINDOW * mainW;
-    WINDOW * inputWB;
-    WINDOW * inputW;
-    WINDOW * pjsWB;
-    WINDOW * pjsW;
-    WINDOW * pnjsWB;
-    WINDOW * pnjsW;
-    WINDOW * helpW;*/
+    // WINDOW * helpW; TODO
 }
 
 Render::~Render() {
@@ -129,9 +121,6 @@ void Render::pjs() {
         uint8_t maxx = getmaxx(pjsW);
         std::string hp = std::to_string(entities.getEntity(0, i).hp);
         uint8_t hpx = maxx - hp.length();
-        /*if (i < 10) {
-            mvwprintw(pjsW, i, 1, "%d.", i);
-        } else mvwprintw(pjsW, i, 0, "%d.", i);*/
         mvwprintw(pjsW, i, 0, "%s", entities.getEntity(0, i).name.c_str());
         mvwprintw(pjsW, i, hpx, "%s", hp.c_str());
         wrefresh(pjsW);
@@ -161,9 +150,6 @@ void Render::pnjs() {
         uint8_t maxx = getmaxx(pnjsW);
         std::string hp = std::to_string(entities.getEntity(1, i).hp);
         uint8_t hpx = maxx - hp.length();
-        /*if (i < 10) {
-            mvwprintw(pnjsW, i, 1, "%d.", i);
-        } else mvwprintw(pnjsW, i, 0, "%d.", i);*/
         mvwprintw(pnjsW, i, 0, "%s", entities.getEntity(1, i).name.c_str());
         mvwprintw(pnjsW, i, hpx, "%s", hp.c_str());
         wrefresh(pnjsW);

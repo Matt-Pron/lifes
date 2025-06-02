@@ -4,11 +4,10 @@
 #include <string>
 
 std::string getPath();
-void save();
-void saveVictims();
-void load();
+void savePJ();
+void loadPJ();
 
-void saveEncounter(std::string filename);
+bool saveEncounter(std::string filename, bool overwrite);
 void loadEncounter(std::string filename);
 
 #endif // DATA_H

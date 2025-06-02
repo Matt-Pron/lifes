@@ -12,6 +12,8 @@ void modeRemove();
 
 void modeEncounter(bool save);
 
+bool askOverwrite(const std::string& filename);
+
 void quit();
 
 bool moveUp();

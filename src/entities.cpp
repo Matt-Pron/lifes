@@ -2,14 +2,13 @@
 #include <ncurses.h>
 #include "entities.h"
 #include "data.h"
-#include "render.h"
 
 Entities entities;
 Indices indices;
 
-Entities::Entities() { // : pjs_{}, pnjs_{} {
+Entities::Entities() {
     encounter_ = "pnjs";
-    load();
+    loadPJ();
     loadEncounter(encounter_);
 }
 

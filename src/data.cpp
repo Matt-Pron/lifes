@@ -1,35 +1,34 @@
 #include "data.h"
 #include "entities.h"
 
-#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <ctime>
 #include <fstream>
-#include <iomanip>
 #include <string>
 #include <unistd.h>
 #include <linux/limits.h>
+#include <filesystem>
 
 std::string getPath() {
     char buf[PATH_MAX];
     ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
     if (len == -1) {
-        return "./data/";
+        return "./saves/";
     }
     buf[len] = '\0';
 
     std::string path(buf);
     size_t pos = path.find_last_of('/');
     if (pos == std::string::npos) {
-        return "./data/";
+        return "./saves/";
     }
     path = path.substr(0, pos);
-    return path + "/data/";
+    return path + "/saves/";
 }
 
-void save() {
+void savePJ() {
     std::string pjsPath = getPath() + "pjs.ini";
     std::ofstream outFilePj(pjsPath);
 
@@ -41,35 +40,7 @@ void save() {
     outFilePj.close();
 }
 
-void saveVictims() {
-    auto now = std::chrono::system_clock::now();
-    std::time_t time = std::chrono::system_clock::to_time_t(now);
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&time), "%Y.%m.%d_%H.%M.%S");
-
-    std::string victimsPath = getPath().erase(getPath().length() - 5) + ss.str() + ".ini";
-    std::ofstream outFileVictim(victimsPath);
-
-    outFileVictim << "Rest in peace,\n";
-    if (entities.getSize(1) == 1) {
-        outFileVictim << entities.getEntity(1, entities.getSize(1) - 1).name << ".\n";
-    } else if (entities.getSize(1) > 1) {
-
-        for (uint8_t i = 0; i < entities.getSize(1); ++i) {
-            if (i < entities.getSize(1) - 2) {
-                outFileVictim << entities.getEntity(1, i).name << ",\n";
-            } else if (i < entities.getSize(1) - 1) {
-                outFileVictim << entities.getEntity(1, i).name << "\n";
-            } else if (i == entities.getSize(1) - 1) {
-                outFileVictim << "and " << entities.getEntity(1, i).name << ".\n";
-            }
-        }
-    }
-
-    outFileVictim.close();
-}
-
-void load() {
+void loadPJ() {
     std::string pjsPath = getPath() + "pjs.ini";
     std::ifstream inFilePj(pjsPath);
 
@@ -96,16 +67,26 @@ void load() {
     inFilePj.close();
 }
 
-void saveEncounter(std::string filename) {
+bool saveEncounter(std::string filename, bool overwrite) {
+    if (filename == "pjs") return 0; // Dont overwrite the player characters
+    
     std::string pnjsPath = getPath() + filename + ".ini";
-    std::ofstream outFilePnj(pnjsPath);
 
-    outFilePnj << "[pnj]\n";
-    for (uint8_t i = 0; i < entities.getSize(1); ++i) {
-        outFilePnj << entities.getEntity(1, i).name << "=" << std::to_string(entities.getEntity(1, i).hp) << "\n";
+    namespace fs = std::filesystem;
+
+    if (!fs::exists(pnjsPath) || overwrite) {
+        std::ofstream outFilePnj(pnjsPath);
+
+        outFilePnj << "[pnj]\n";
+        for (uint8_t i = 0; i < entities.getSize(1); ++i) {
+            outFilePnj << entities.getEntity(1, i).name << "=" << std::to_string(entities.getEntity(1, i).hp) << "\n";
+        } 
+        outFilePnj.close();
+        return 1;
+    } else {
+        return 0;
     }
 
-    outFilePnj.close();
 }
 
 void loadEncounter(std::string filename) {

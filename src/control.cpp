@@ -37,8 +37,8 @@ void modeDefault() {
             uint16_t hp_ = std::stoi(input);
             input = "";
             entities.modifyHP(hp_);
-            save();
-            saveEncounter(entities.getEncounter());
+            savePJ();
+            saveEncounter(entities.getEncounter(), 1);
             indices.getTable() ? render.pnjs() : render.pjs();
             render.print(input, 1);
         }
@@ -128,8 +128,8 @@ void modeAddHP(const bool table, const std::string& name) {
             uint16_t hp_ = std::stoi(input);
             newEntity->hp = hp_;            // Add the entity
             entities.add(newEntity, table);
-            save();
-            saveEncounter(entities.getEncounter());
+            savePJ();
+            saveEncounter(entities.getEncounter(), 1);
             delete newEntity;
             table ? render.pnjs() : render.pjs();
             break;
@@ -153,8 +153,8 @@ void modeRemove() {
 
         if (ch == 'y') {
             entities.remove();
-            save();
-            saveEncounter(entities.getEncounter());
+            savePJ();
+            saveEncounter(entities.getEncounter(), 1);
             if (indices.getIndexPNJ() >= entities.getSize(1)) indices.setIndexPNJ(entities.getSize(1) - 1);
             if (indices.getIndexPJ() >= entities.getSize(0)) indices.setIndexPJ(entities.getSize(0) - 1);
             indices.getTable() ? render.pnjs() : render.pjs();
@@ -190,7 +190,8 @@ void modeEncounter(bool save) {
         render.print(str + input, 1);
 
         if (ch == '\n' && input.length() > 0 && save) {
-            saveEncounter(input);
+            if (!saveEncounter(input, 0))
+                askOverwrite(input);
             entities.changeEncounter(input);
             break;
         }
@@ -204,6 +205,26 @@ void modeEncounter(bool save) {
         if (ch == 27) break;       // return to default
     }
 
+}
+
+bool askOverwrite(const std::string& filename) {
+    std::string str = filename + " already exists. Do you want to overwrite it? [y]es [n]o";
+    render.print(str, 1);
+
+    bool on = 1;
+
+    while (on) {
+        int ch = getch();
+
+        if (ch == 'y') {
+            saveEncounter(entities.getEncounter(), 1);
+            break;
+        }
+
+        if (ch == 27 || ch == 'n') break;                // return to default
+        if (ch == 'q') quit();
+    }
+return 0;
 }
 
 void quit() {
